@@ -1,0 +1,686 @@
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+
+<div id="roulette-app" style="font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif; padding:18px; max-width:1100px; margin:0 auto; color:#111;">
+  <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; align-items:start;">
+
+    <!-- LEFT: WHEEL -->
+    <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+            <div style="display:flex; flex-direction:column; gap:6px;">
+              <div style="font-weight:900; font-size:18px;">🎰 Roulette Europea (Realistica)</div>
+            </div>
+
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);">
+                <div style="font-size:12px; color:rgba(0,0,0,.65);">Saldo</div>
+                <div id="balance" style="font-weight:900; font-size:18px;">€ 1.000</div>
+              </div>
+
+              <button id="spinBtn" style="
+                border:none; cursor:pointer;
+                padding:12px 16px; border-radius:14px;
+                background:linear-gradient(135deg,#111 0%, #2a2a2a 100%);
+                color:#fff; font-weight:800; letter-spacing:.2px;
+                box-shadow:0 14px 28px rgba(0,0,0,.18);
+              ">Gira la roulette</button>
+
+              <button id="clearBtn" style="
+                border:1px solid rgba(0,0,0,.14); cursor:pointer;
+                padding:12px 14px; border-radius:14px;
+                background:#fff; color:#111; font-weight:800;
+              ">Azzera puntate</button>
+            </div>
+          </div>
+
+          <!-- STATUS (BIGGER + MORE VISIBLE) -->
+          <div id="status" style="
+            font-size:22px;
+            font-weight:900;
+            color:#111;
+            background:linear-gradient(135deg,#f4f4f4,#ffffff);
+            border:2px dashed rgba(0,0,0,.15);
+            padding:14px 18px;
+            border-radius:14px;
+            text-align:center;
+          ">Scegli gettone → piazza puntate → Gira</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; position:relative; border-radius:16px; background: radial-gradient(1200px 380px at 50% 15%, rgba(0,0,0,.06), transparent 60%), #fbfbfb; border:1px solid rgba(0,0,0,.06); padding:12px; overflow:hidden;">
+        <!-- Pointer -->
+        <div style="
+          position:absolute; top:12px; left:50%; transform:translateX(-50%);
+          width:0; height:0;
+          border-left:14px solid transparent;
+          border-right:14px solid transparent;
+          border-bottom:26px solid #d6b56a;
+          filter:drop-shadow(0 6px 10px rgba(0,0,0,.20));
+          z-index:3;
+        "></div>
+
+        <canvas id="wheel" width="620" height="620" style="width:100%; max-width:620px; display:block; margin:0 auto; border-radius:14px;"></canvas>
+
+        <!-- BIG WIN/LOSE OVERLAY -->
+        <div id="bigResult" style="
+          display:none;
+          position:absolute;
+          inset:0;
+          align-items:center;
+          justify-content:center;
+          z-index:5;
+          font-size:46px;
+          font-weight:900;
+          text-align:center;
+          letter-spacing:1px;
+          text-shadow:0 8px 24px rgba(0,0,0,.45);
+          padding:24px;
+        "></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
+            <div style="font-size:12px; color:rgba(0,0,0,.65);">Esito</div>
+            <div id="outcome" style="font-weight:900; font-size:18px;">—</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
+            <div style="font-size:12px; color:rgba(0,0,0,.65);">Vincita</div>
+            <div id="win" style="font-weight:900; font-size:18px;">€ 0</div>
+          </div>
+          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08); min-width:220px;">
+            <div style="font-size:12px; color:rgba(0,0,0,.65);">Puntate attive</div>
+            <div id="betsSummary" style="font-weight:800; font-size:14px; line-height:1.25;">Nessuna puntata</div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px; display:flex; justify-content:center;">
+          <div id="history" style="font-size:12px; color:rgba(0,0,0,.65); text-align:center;">
+            Storico: <span id="historyList">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: BETTING -->
+    <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+        <div>
+          <div style="font-weight:900; font-size:16px;">Puntate</div>
+          <div style="font-size:12px; color:rgba(0,0,0,.65);">Seleziona un gettone e clicca su un numero (o Rosso/Nero).</div>
+        </div>
+
+        <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); text-align:right;">
+          <div style="font-size:12px; color:rgba(0,0,0,.65);">Gettone selezionato</div>
+          <div id="chipSelected" style="font-weight:900; font-size:16px;">€ 10</div>
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div style="margin-top:12px;">
+        <div style="font-weight:800; font-size:13px; margin-bottom:8px;">Gettoni</div>
+        <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+      </div>
+
+      <!-- Red/Black -->
+      <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+        <button class="betRB" data-rb="red" style="
+          border:none; cursor:pointer;
+          padding:14px 12px; border-radius:14px;
+          background:linear-gradient(135deg,#b4001e,#ff2448);
+          color:#fff; font-weight:900; letter-spacing:.3px;
+          box-shadow:0 14px 28px rgba(180,0,30,.18);
+        ">ROSSO (1:1)</button>
+
+        <button class="betRB" data-rb="black" style="
+          border:none; cursor:pointer;
+          padding:14px 12px; border-radius:14px;
+          background:linear-gradient(135deg,#121212,#3b3b3b);
+          color:#fff; font-weight:900; letter-spacing:.3px;
+          box-shadow:0 14px 28px rgba(0,0,0,.18);
+        ">NERO (1:1)</button>
+      </div>
+
+      <!-- Numbers grid -->
+      <div style="margin-top:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+          <div style="font-weight:800; font-size:13px;">Numeri (35:1)</div>
+          <div style="font-size:12px; color:rgba(0,0,0,.60);">Clic per aggiungere puntata</div>
+        </div>
+
+        <div id="numbers" style="
+          margin-top:10px;
+          display:grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap:8px;
+        "></div>
+      </div>
+
+      <!-- Info -->
+      <div style="margin-top:14px; padding:12px; border-radius:14px; border:1px solid rgba(0,0,0,.10); background:rgba(0,0,0,.03);">
+        <div style="font-weight:900; font-size:13px;">Regole rapide</div>
+        <ul style="margin:8px 0 0 18px; padding:0; font-size:12px; color:rgba(0,0,0,.70); line-height:1.45;">
+          <li>Numero: paga <b>35:1</b> (vincita = puntata×36)</li>
+          <li>Rosso/Nero: paga <b>1:1</b> (vincita = puntata×2)</li>
+          <li>Lo <b>0</b> è verde e fa perdere Rosso/Nero</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(() => {
+  // ======= European wheel order (single zero) =======
+  const WHEEL_ORDER = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+  const RED_SET = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+
+  const canvas = document.getElementById("wheel");
+  const ctx = canvas.getContext("2d");
+
+  const statusEl = document.getElementById("status");
+  const balanceEl = document.getElementById("balance");
+  const outcomeEl = document.getElementById("outcome");
+  const winEl = document.getElementById("win");
+  const betsSummaryEl = document.getElementById("betsSummary");
+  const historyListEl = document.getElementById("historyList");
+  const bigResult = document.getElementById("bigResult");
+
+  const spinBtn = document.getElementById("spinBtn");
+  const clearBtn = document.getElementById("clearBtn");
+
+  const chipsWrap = document.getElementById("chips");
+  const numbersWrap = document.getElementById("numbers");
+  const chipSelectedEl = document.getElementById("chipSelected");
+
+  // ======= State =======
+  let balance = 1000;
+  let selectedChip = 10;
+
+  let bets = {
+    numbers: new Map(),
+    red: 0,
+    black: 0
+  };
+
+  let isSpinning = false;
+
+  // Animation state
+  let wheelAngle = 0;     // radians
+  let ballAngle = 0;      // radians
+  let rafId = null;
+
+  const history = [];
+
+  // ======= Helpers =======
+  const fmt = (n) => "€ " + n.toLocaleString("it-IT");
+  const pocketCount = WHEEL_ORDER.length; // 37
+  const pocketAngle = (Math.PI * 2) / pocketCount;
+  const pointerAngle = -Math.PI / 2; // top
+
+  function numberColor(n){
+    if (n === 0) return "green";
+    return RED_SET.has(n) ? "red" : "black";
+  }
+
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function totalBet(){
+    let t = bets.red + bets.black;
+    for (const v of bets.numbers.values()) t += v;
+    return t;
+  }
+
+  function updateUI(){
+    balanceEl.textContent = fmt(balance);
+    chipSelectedEl.textContent = fmt(selectedChip);
+
+    const parts = [];
+    if (bets.red) parts.push(`Rosso: <b>${fmt(bets.red)}</b>`);
+    if (bets.black) parts.push(`Nero: <b>${fmt(bets.black)}</b>`);
+    if (bets.numbers.size){
+      const list = [...bets.numbers.entries()]
+        .sort((a,b)=>a[0]-b[0])
+        .slice(0, 8)
+        .map(([num, amt]) => `${num}: <b>${fmt(amt)}</b>`);
+      const extra = bets.numbers.size > 8 ? ` +${bets.numbers.size-8}…` : "";
+      parts.push(`Numeri: ${list.join(", ")}${extra}`);
+    }
+
+    betsSummaryEl.innerHTML = parts.length
+      ? (parts.join("<br>") + `<br><span style="color:rgba(0,0,0,.65); font-weight:700;">Totale puntato: ${fmt(totalBet())}</span>`)
+      : "Nessuna puntata";
+
+    historyListEl.textContent = history.length ? history.join(" · ") : "—";
+  }
+
+  function clearBets(){
+    bets.numbers.clear();
+    bets.red = 0;
+    bets.black = 0;
+    outcomeEl.textContent = "—";
+    winEl.textContent = fmt(0);
+    updateUI();
+  }
+
+  function showBigResult(isWin){
+    bigResult.style.display = "flex";
+    bigResult.style.backdropFilter = "blur(2px)";
+    bigResult.style.webkitBackdropFilter = "blur(2px)";
+    bigResult.style.borderRadius = "14px";
+
+    if (isWin){
+      bigResult.innerHTML = "💰<br>COMPLIMENTI<br>HAI VINTO!";
+      bigResult.style.color = "#1ecf6f";
+      bigResult.style.background = "rgba(0,0,0,.55)";
+    } else {
+      bigResult.innerHTML = "❌<br>HAI PERSO";
+      bigResult.style.color = "#ff2448";
+      bigResult.style.background = "rgba(0,0,0,.65)";
+    }
+
+    setTimeout(() => {
+      bigResult.style.display = "none";
+    }, 2200);
+  }
+
+  // ======= Build chips =======
+  const CHIP_VALUES = [1, 5, 10, 25, 50, 100];
+
+  function chipStyle(value, active){
+    const ring = active ? "0 0 0 3px rgba(214,181,106,.55)" : "0 0 0 1px rgba(0,0,0,.10)";
+    return `
+      width:56px; height:56px; border-radius:999px;
+      display:flex; align-items:center; justify-content:center;
+      font-weight:900; cursor:pointer; user-select:none;
+      background: radial-gradient(18px 18px at 30% 30%, rgba(255,255,255,.85), rgba(255,255,255,.25) 55%, rgba(0,0,0,.06) 100%),
+                  linear-gradient(135deg, rgba(214,181,106,.95), rgba(165,125,52,.95));
+      color:#111;
+      border:1px solid rgba(0,0,0,.18);
+      box-shadow: 0 14px 28px rgba(0,0,0,.12), inset 0 0 0 2px rgba(255,255,255,.25);
+      ${active ? `outline:none; box-shadow: 0 14px 28px rgba(0,0,0,.12), inset 0 0 0 2px rgba(255,255,255,.25), ${ring};` : ""}
+    `;
+  }
+
+  function renderChips(){
+    chipsWrap.innerHTML = "";
+    CHIP_VALUES.forEach(v => {
+      const d = document.createElement("div");
+      d.style.cssText = chipStyle(v, v === selectedChip);
+      d.textContent = v;
+      d.title = `Seleziona gettone €${v}`;
+      d.onclick = () => { selectedChip = v; renderChips(); updateUI(); };
+      chipsWrap.appendChild(d);
+    });
+  }
+
+  // ======= Build numbers grid =======
+  function numberButtonStyle(n){
+    const col = numberColor(n);
+    const bg = col === "green" ? "linear-gradient(135deg,#0b7a3e,#1ecf6f)" :
+              col === "red" ? "linear-gradient(135deg,#b4001e,#ff2448)" :
+              "linear-gradient(135deg,#111,#3a3a3a)";
+    return `
+      padding:12px 6px;
+      border-radius:14px;
+      border:none;
+      cursor:pointer;
+      color:#fff;
+      font-weight:900;
+      background:${bg};
+      box-shadow: 0 10px 22px rgba(0,0,0,.14);
+      position:relative;
+      overflow:hidden;
+    `;
+  }
+
+  function buildNumbers(){
+    numbersWrap.innerHTML = "";
+    for (let n = 0; n <= 36; n++){
+      const b = document.createElement("button");
+      b.style.cssText = numberButtonStyle(n);
+      b.innerHTML = `${n}<div style="font-size:11px; opacity:.85; font-weight:800; margin-top:2px;">+ gettone</div>`;
+      b.onclick = () => addBetNumber(n);
+      numbersWrap.appendChild(b);
+    }
+  }
+
+  // ======= Betting actions (BIGGER / MORE VISIBLE TEXT) =======
+  function addBetNumber(n){
+    if (isSpinning) return;
+    const cur = bets.numbers.get(n) || 0;
+    bets.numbers.set(n, cur + selectedChip);
+
+    statusEl.innerHTML = `🎯 PUNTATA SUL NUMERO <span style="color:#d6b56a;">${n}</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
+    updateUI();
+  }
+
+  function addBetRB(which){
+    if (isSpinning) return;
+    bets[which] += selectedChip;
+
+    if (which === "red"){
+      statusEl.innerHTML = `🎯 PUNTATA SU <span style="color:#b4001e;">ROSSO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
+    } else {
+      statusEl.innerHTML = `🎯 PUNTATA SU <span style="color:#111;">NERO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
+    }
+
+    updateUI();
+  }
+
+  document.querySelectorAll(".betRB").forEach(btn => {
+    btn.addEventListener("click", () => addBetRB(btn.dataset.rb));
+  });
+
+  // ======= Wheel drawing =======
+  function drawWheel(){
+    const w = canvas.width, h = canvas.height;
+    const cx = w/2, cy = h/2;
+
+    ctx.clearRect(0,0,w,h);
+
+    // soft table shadow
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.beginPath();
+    ctx.arc(0,0, (Math.min(cx,cy)-8), 0, Math.PI*2);
+    ctx.shadowColor = "rgba(0,0,0,.20)";
+    ctx.shadowBlur = 28;
+    ctx.shadowOffsetY = 10;
+    ctx.fillStyle = "rgba(0,0,0,.03)";
+    ctx.fill();
+    ctx.restore();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(wheelAngle);
+
+    const R = Math.min(cx, cy) - 18;
+    const ringOuter = R;
+    const ringInner = R*0.72;
+    const textRadius = (ringOuter + ringInner) / 2;
+
+    // outer rim
+    ctx.beginPath();
+    ctx.arc(0,0, ringOuter+10, 0, Math.PI*2);
+    ctx.fillStyle = "#2b2b2b";
+    ctx.fill();
+
+    // metal rim highlight
+    ctx.beginPath();
+    ctx.arc(0,0, ringOuter+6, 0, Math.PI*2);
+    const grd = ctx.createRadialGradient(0,0, ringOuter*0.55, 0,0, ringOuter+18);
+    grd.addColorStop(0, "rgba(255,255,255,.15)");
+    grd.addColorStop(1, "rgba(0,0,0,.35)");
+    ctx.fillStyle = grd;
+    ctx.fill();
+
+    // pockets
+    for (let i=0;i<pocketCount;i++){
+      const n = WHEEL_ORDER[i];
+      const a0 = i*pocketAngle;
+      const a1 = a0 + pocketAngle;
+
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0, ringOuter, a0, a1);
+      ctx.closePath();
+
+      const col = numberColor(n);
+      ctx.fillStyle = col === "green" ? "#0b7a3e" : col === "red" ? "#b4001e" : "#141414";
+      ctx.fill();
+
+      // separators
+      ctx.strokeStyle = "rgba(255,255,255,.14)";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0,0, ringOuter, a0, a0);
+      ctx.stroke();
+
+      // inner ring wedge
+      ctx.beginPath();
+      ctx.moveTo(0,0);
+      ctx.arc(0,0, ringInner, a0, a1);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(255,255,255,.06)";
+      ctx.fill();
+
+      // number
+      ctx.save();
+      const mid = (a0+a1)/2;
+      ctx.rotate(mid);
+      ctx.translate(textRadius, 0);
+      ctx.rotate(Math.PI/2);
+      ctx.fillStyle = "rgba(255,255,255,.95)";
+      ctx.font = "900 18px Roboto";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(String(n), 0, 0);
+      ctx.restore();
+    }
+
+    // center
+    ctx.beginPath();
+    ctx.arc(0,0, ringInner-10, 0, Math.PI*2);
+    const g2 = ctx.createRadialGradient(0,0, 20, 0,0, ringInner);
+    g2.addColorStop(0, "#f2d9a0");
+    g2.addColorStop(0.35, "#caa45b");
+    g2.addColorStop(1, "#7a5b26");
+    ctx.fillStyle = g2;
+    ctx.fill();
+
+    // center cap
+    ctx.beginPath();
+    ctx.arc(0,0, 38, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(0,0,0,.22)";
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(0,0, 30, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(255,255,255,.16)";
+    ctx.fill();
+
+    ctx.restore();
+
+    // Ball
+    const RballTrack = (Math.min(cx,cy) - 18) * 0.90;
+    const rBall = 9;
+
+    const bx = cx + Math.cos(ballAngle) * RballTrack;
+    const by = cy + Math.sin(ballAngle) * RballTrack;
+
+    ctx.beginPath();
+    ctx.arc(bx+3, by+4, rBall, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(0,0,0,.22)";
+    ctx.fill();
+
+    const gball = ctx.createRadialGradient(bx-3,by-3, 2, bx,by, rBall+4);
+    gball.addColorStop(0, "#ffffff");
+    gball.addColorStop(0.5, "#efefef");
+    gball.addColorStop(1, "#bdbdbd");
+    ctx.beginPath();
+    ctx.arc(bx, by, rBall, 0, Math.PI*2);
+    ctx.fillStyle = gball;
+    ctx.fill();
+    ctx.strokeStyle = "rgba(0,0,0,.10)";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(bx-2, by-2, rBall*0.55, 0, Math.PI*2);
+    ctx.fillStyle = "rgba(255,255,255,.22)";
+    ctx.fill();
+  }
+
+  function pocketIndexAtPointer(angle){
+    const twoPi = Math.PI*2;
+    const p = ((pointerAngle - angle) % twoPi + twoPi) % twoPi;
+    const idx = Math.floor(p / pocketAngle);
+    return clamp(idx, 0, pocketCount-1);
+  }
+
+  function numberAtPointer(angle){
+    return WHEEL_ORDER[pocketIndexAtPointer(angle)];
+  }
+
+  function wheelAngleForTargetIndex(targetIdx){
+    const targetLocalMid = targetIdx * pocketAngle + pocketAngle/2;
+    return pointerAngle - targetLocalMid;
+  }
+
+  // ======= Spin logic =======
+  function computeWinnings(resultNumber){
+    let win = 0;
+
+    const numAmt = bets.numbers.get(resultNumber) || 0;
+    if (numAmt > 0) win += numAmt * 36;
+
+    const col = numberColor(resultNumber);
+    if (col === "red" && bets.red > 0) win += bets.red * 2;
+    if (col === "black" && bets.black > 0) win += bets.black * 2;
+
+    return win;
+  }
+
+  function spin(){
+    if (isSpinning) return;
+
+    const wager = totalBet();
+    if (wager <= 0){
+      statusEl.innerHTML = "Prima piazza almeno una puntata 🙂";
+      return;
+    }
+    if (balance < wager){
+      statusEl.innerHTML = "Saldo insufficiente per questa puntata.";
+      return;
+    }
+
+    // Deduct wager
+    balance -= wager;
+
+    // outcome
+    const targetIdx = Math.floor(Math.random() * pocketCount);
+    const duration = 5200 + Math.random() * 900;
+
+    isSpinning = true;
+    spinBtn.disabled = true;
+    clearBtn.disabled = true;
+
+    // Hide overlay if visible
+    bigResult.style.display = "none";
+
+    statusEl.innerHTML = "🎡 La pallina gira…";
+    outcomeEl.textContent = "—";
+    winEl.textContent = fmt(0);
+
+    const startWheel = wheelAngle;
+    const startBall = ballAngle;
+    const twoPi = Math.PI*2;
+
+    const baseFinal = wheelAngleForTargetIndex(targetIdx);
+    const extraTurns = 8 + Math.floor(Math.random() * 4); // 8–11
+    let finalWheel = baseFinal;
+    while (finalWheel < startWheel) finalWheel += twoPi;
+    finalWheel += extraTurns * twoPi;
+
+    const finalBall = pointerAngle + (Math.random() * 0.28 - 0.14);
+    const ballExtraTurns = 14 + Math.floor(Math.random() * 6);
+    let ballTarget = finalBall;
+    while (ballTarget > startBall) ballTarget -= twoPi;
+    ballTarget -= ballExtraTurns * twoPi;
+
+    const t0 = performance.now();
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+    cancelAnimationFrame(rafId);
+
+    function frame(now){
+      const t = clamp((now - t0) / duration, 0, 1);
+      const e = easeOutCubic(t);
+
+      wheelAngle = startWheel + (finalWheel - startWheel) * e;
+      const eb = easeOutCubic(clamp(t * 1.05, 0, 1));
+      ballAngle = startBall + (ballTarget - startBall) * eb;
+
+      drawWheel();
+
+      if (t < 1){
+        rafId = requestAnimationFrame(frame);
+      } else {
+        // lock
+        wheelAngle = finalWheel;
+        ballAngle = finalBall;
+        drawWheel();
+
+        const landed = numberAtPointer(wheelAngle);
+        const col = numberColor(landed);
+        const labelCol = col === "green" ? "🟢" : col === "red" ? "🔴" : "⚫️";
+
+        outcomeEl.textContent = `${labelCol} ${landed}`;
+
+        const win = computeWinnings(landed);
+        balance += win;
+        winEl.textContent = fmt(win);
+
+        // history
+        const hCol = col === "green" ? "0" : (col === "red" ? "R" : "N");
+        history.unshift(`${landed}${hCol}`);
+        if (history.length > 12) history.pop();
+
+        // show big overlay (win/lose)
+        showBigResult(win > 0);
+
+        // end
+        isSpinning = false;
+        spinBtn.disabled = false;
+        clearBtn.disabled = false;
+
+        // Reset bets after spin (quick game)
+        clearBets();
+        // Restore shown outcome + win AFTER clearing
+        outcomeEl.textContent = `${labelCol} ${landed}`;
+        winEl.textContent = fmt(win);
+
+        // Status message bigger
+        if (win > 0){
+          statusEl.innerHTML = `✅ RISULTATO: <b>${landed}</b> — <span style="color:#1ecf6f;">HAI VINTO</span><br><span style="font-size:18px; font-weight:800;">Vincita: ${fmt(win)}</span>`;
+        } else {
+          statusEl.innerHTML = `❌ RISULTATO: <b>${landed}</b> — <span style="color:#ff2448;">HAI PERSO</span><br><span style="font-size:18px; font-weight:800;">Riprova!</span>`;
+        }
+
+        updateUI();
+      }
+    }
+
+    rafId = requestAnimationFrame(frame);
+    updateUI();
+  }
+
+  // ======= Buttons =======
+  spinBtn.addEventListener("click", spin);
+
+  clearBtn.addEventListener("click", () => {
+    if (isSpinning) return;
+    clearBets();
+    statusEl.innerHTML = "Puntate azzerate.";
+    bigResult.style.display = "none";
+  });
+
+  // ======= Init =======
+  renderChips();
+  buildNumbers();
+  updateUI();
+
+  wheelAngle = 0.2;
+  ballAngle = 0.9;
+  drawWheel();
+})();
+</script>
+
+<style>
+  @media (max-width: 980px){
+    #roulette-app > div{
+      grid-template-columns:1fr !important;
+    }
+  }
+</style>
