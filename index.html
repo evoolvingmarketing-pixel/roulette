@@ -1,6 +1,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 
 <div id="roulette-app" style="font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif; padding:18px; max-width:1100px; margin:0 auto; color:#111;">
+
+  <!-- ✅ TITLE + DESCRIPTION -->
+  <div style="
+    background:#fff;
+    border:1px solid rgba(0,0,0,.10);
+    border-radius:18px;
+    box-shadow:0 14px 34px rgba(0,0,0,.07);
+    padding:14px;
+    margin-bottom:16px;
+  ">
+    <div style="font-weight:900; font-size:22px;">🎡 Roulette Europea (Demo)</div>
+    <div style="margin-top:6px; font-size:13px; color:rgba(0,0,0,.70); line-height:1.5;">
+      Seleziona un gettone, piazza le puntate (numeri o Rosso/Nero) e premi <b>Gira la roulette</b>.
+      Questa è una demo: dopo qualche giro ti proporremo la versione reale.
+    </div>
+  </div>
+
   <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; align-items:start;">
 
     <!-- LEFT: WHEEL -->
@@ -169,6 +186,85 @@
   </div>
 </div>
 
+<!-- ✅ POPUP 3° CLICK (same logic as Slot) -->
+<div id="promoOverlay" style="
+  position:fixed;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.60);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index:999999;
+  padding:18px;
+  font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+">
+  <div style="
+    width:min(440px, 96vw);
+    border-radius:22px;
+    padding:20px;
+    background:
+      radial-gradient(700px 320px at 20% 0%, rgba(245,193,108,.14), transparent 55%),
+      radial-gradient(700px 320px at 80% 20%, rgba(140,110,255,.12), transparent 55%),
+      linear-gradient(135deg,#0b0b10,#161622);
+    color:#fff;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow:0 30px 90px rgba(0,0,0,.65);
+    position:relative;
+  ">
+    <div style="
+      width:54px; height:54px;
+      margin:4px auto 10px;
+      border-radius:18px;
+      display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(135deg,#f5c16c,#c79b3a);
+      color:#111;
+      font-weight:900;
+      box-shadow:0 18px 55px rgba(0,0,0,.55);
+      font-size:26px;
+    ">🎯</div>
+
+    <div style="font-size:28px; font-weight:900; margin-bottom:8px;">
+      Vuoi giocare sul serio?
+    </div>
+
+    <div style="font-size:14px; color:rgba(255,255,255,.85); line-height:1.5; margin-bottom:16px;">
+      Questa è una demo. Se vuoi provare il gioco reale, entra su un sito Partner!
+    </div>
+
+    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <a href="https://nextscore.it/referral" style="
+        text-decoration:none;
+        padding:14px 18px;
+        border-radius:16px;
+        background:linear-gradient(135deg,#f5c16c,#c79b3a);
+        color:#111;
+        font-weight:900;
+        box-shadow:0 18px 55px rgba(0,0,0,.45);
+        display:inline-flex;
+        align-items:center;
+        gap:10px;
+      ">
+        Sì, portami lì →
+      </a>
+
+      <button id="promoNo" style="
+        border:1px solid rgba(255,255,255,.16);
+        background:rgba(255,255,255,.06);
+        color:#fff;
+        border-radius:16px;
+        padding:14px 18px;
+        font-weight:900;
+        cursor:pointer;
+      ">
+        No, continua
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
   // ======= European wheel order (single zero) =======
@@ -192,6 +288,34 @@
   const chipsWrap = document.getElementById("chips");
   const numbersWrap = document.getElementById("numbers");
   const chipSelectedEl = document.getElementById("chipSelected");
+
+  // ✅ Popup logic (3rd click)
+  const promoOverlay = document.getElementById("promoOverlay");
+  const promoNo = document.getElementById("promoNo");
+  const SPIN_CLICKS_KEY = "roulette_spin_clicks_v1";
+  const POPUP_SHOWN_KEY = "roulette_popup_shown_v1";
+  let spinClicks = Number(localStorage.getItem(SPIN_CLICKS_KEY) || "0");
+  let promoShown = localStorage.getItem(POPUP_SHOWN_KEY) === "1";
+
+  function maybeShowPromo(){
+    spinClicks += 1;
+    localStorage.setItem(SPIN_CLICKS_KEY, String(spinClicks));
+    if (spinClicks === 3 && !promoShown){
+      promoShown = true;
+      localStorage.setItem(POPUP_SHOWN_KEY, "1");
+      promoOverlay.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    }
+  }
+
+  function closePromo(){
+    promoOverlay.style.display = "none";
+    document.body.style.overflow = "";
+  }
+
+  promoNo.addEventListener("click", closePromo);
+  promoOverlay.addEventListener("click", (e) => { if(e.target === promoOverlay) closePromo(); });
+  window.addEventListener("keydown", (e) => { if(e.key === "Escape" && promoOverlay.style.display === "flex") closePromo(); });
 
   // ======= State =======
   let balance = 1000;
@@ -345,7 +469,7 @@
     }
   }
 
-  // ======= Betting actions (BIGGER / MORE VISIBLE TEXT) =======
+  // ======= Betting actions =======
   function addBetNumber(n){
     if (isSpinning) return;
     const cur = bets.numbers.get(n) || 0;
@@ -379,7 +503,6 @@
 
     ctx.clearRect(0,0,w,h);
 
-    // soft table shadow
     ctx.save();
     ctx.translate(cx, cy);
     ctx.beginPath();
@@ -400,13 +523,11 @@
     const ringInner = R*0.72;
     const textRadius = (ringOuter + ringInner) / 2;
 
-    // outer rim
     ctx.beginPath();
     ctx.arc(0,0, ringOuter+10, 0, Math.PI*2);
     ctx.fillStyle = "#2b2b2b";
     ctx.fill();
 
-    // metal rim highlight
     ctx.beginPath();
     ctx.arc(0,0, ringOuter+6, 0, Math.PI*2);
     const grd = ctx.createRadialGradient(0,0, ringOuter*0.55, 0,0, ringOuter+18);
@@ -415,7 +536,6 @@
     ctx.fillStyle = grd;
     ctx.fill();
 
-    // pockets
     for (let i=0;i<pocketCount;i++){
       const n = WHEEL_ORDER[i];
       const a0 = i*pocketAngle;
@@ -430,14 +550,12 @@
       ctx.fillStyle = col === "green" ? "#0b7a3e" : col === "red" ? "#b4001e" : "#141414";
       ctx.fill();
 
-      // separators
       ctx.strokeStyle = "rgba(255,255,255,.14)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(0,0, ringOuter, a0, a0);
       ctx.stroke();
 
-      // inner ring wedge
       ctx.beginPath();
       ctx.moveTo(0,0);
       ctx.arc(0,0, ringInner, a0, a1);
@@ -445,7 +563,6 @@
       ctx.fillStyle = "rgba(255,255,255,.06)";
       ctx.fill();
 
-      // number
       ctx.save();
       const mid = (a0+a1)/2;
       ctx.rotate(mid);
@@ -459,7 +576,6 @@
       ctx.restore();
     }
 
-    // center
     ctx.beginPath();
     ctx.arc(0,0, ringInner-10, 0, Math.PI*2);
     const g2 = ctx.createRadialGradient(0,0, 20, 0,0, ringInner);
@@ -469,7 +585,6 @@
     ctx.fillStyle = g2;
     ctx.fill();
 
-    // center cap
     ctx.beginPath();
     ctx.arc(0,0, 38, 0, Math.PI*2);
     ctx.fillStyle = "rgba(0,0,0,.22)";
@@ -482,7 +597,6 @@
 
     ctx.restore();
 
-    // Ball
     const RballTrack = (Math.min(cx,cy) - 18) * 0.90;
     const rBall = 9;
 
@@ -528,7 +642,6 @@
     return pointerAngle - targetLocalMid;
   }
 
-  // ======= Spin logic =======
   function computeWinnings(resultNumber){
     let win = 0;
 
@@ -545,6 +658,9 @@
   function spin(){
     if (isSpinning) return;
 
+    // ✅ count clicks and show promo at 3rd click (one-time)
+    maybeShowPromo();
+
     const wager = totalBet();
     if (wager <= 0){
       statusEl.innerHTML = "Prima piazza almeno una puntata 🙂";
@@ -555,10 +671,8 @@
       return;
     }
 
-    // Deduct wager
     balance -= wager;
 
-    // outcome
     const targetIdx = Math.floor(Math.random() * pocketCount);
     const duration = 5200 + Math.random() * 900;
 
@@ -566,7 +680,6 @@
     spinBtn.disabled = true;
     clearBtn.disabled = true;
 
-    // Hide overlay if visible
     bigResult.style.display = "none";
 
     statusEl.innerHTML = "🎡 La pallina gira…";
@@ -578,7 +691,7 @@
     const twoPi = Math.PI*2;
 
     const baseFinal = wheelAngleForTargetIndex(targetIdx);
-    const extraTurns = 8 + Math.floor(Math.random() * 4); // 8–11
+    const extraTurns = 8 + Math.floor(Math.random() * 4);
     let finalWheel = baseFinal;
     while (finalWheel < startWheel) finalWheel += twoPi;
     finalWheel += extraTurns * twoPi;
@@ -607,7 +720,6 @@
       if (t < 1){
         rafId = requestAnimationFrame(frame);
       } else {
-        // lock
         wheelAngle = finalWheel;
         ballAngle = finalBall;
         drawWheel();
@@ -622,26 +734,20 @@
         balance += win;
         winEl.textContent = fmt(win);
 
-        // history
         const hCol = col === "green" ? "0" : (col === "red" ? "R" : "N");
         history.unshift(`${landed}${hCol}`);
         if (history.length > 12) history.pop();
 
-        // show big overlay (win/lose)
         showBigResult(win > 0);
 
-        // end
         isSpinning = false;
         spinBtn.disabled = false;
         clearBtn.disabled = false;
 
-        // Reset bets after spin (quick game)
         clearBets();
-        // Restore shown outcome + win AFTER clearing
         outcomeEl.textContent = `${labelCol} ${landed}`;
         winEl.textContent = fmt(win);
 
-        // Status message bigger
         if (win > 0){
           statusEl.innerHTML = `✅ RISULTATO: <b>${landed}</b> — <span style="color:#1ecf6f;">HAI VINTO</span><br><span style="font-size:18px; font-weight:800;">Vincita: ${fmt(win)}</span>`;
         } else {
@@ -679,7 +785,7 @@
 
 <style>
   @media (max-width: 980px){
-    #roulette-app > div{
+    #roulette-app > div:nth-child(2){
       grid-template-columns:1fr !important;
     }
   }
