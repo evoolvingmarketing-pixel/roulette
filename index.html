@@ -1,273 +1,362 @@
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Roulette Europea (Realistica) — Demo</title>
 
-<div id="roulette-app" style="font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif; padding:18px; max-width:1100px; margin:0 auto; color:#111;">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet"/>
 
-  <!-- ✅ TITLE + DESCRIPTION -->
-  <div style="
-    background:#fff;
-    border:1px solid rgba(0,0,0,.10);
-    border-radius:18px;
-    box-shadow:0 14px 34px rgba(0,0,0,.07);
-    padding:14px;
-    margin-bottom:16px;
-  ">
-    <div style="font-weight:900; font-size:22px;">🎡 Roulette Europea (Demo)</div>
-    <div style="margin-top:6px; font-size:13px; color:rgba(0,0,0,.70); line-height:1.5;">
-      Seleziona un gettone, piazza le puntate (numeri o Rosso/Nero) e premi <b>Gira la roulette</b>.
-      Questa è una demo: dopo qualche giro ti proporremo la versione reale.
+  <style>
+    body{
+      margin:0;
+      background:#f3f3f3;
+      font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+      color:#111;
+    }
+    @media (max-width: 980px){
+      #main-grid{ grid-template-columns:1fr !important; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="roulette-app" style="padding:18px; max-width:1100px; margin:0 auto; color:#111; padding-bottom:98px;">
+
+    <!-- TITLE + DESCRIPTION -->
+    <div style="
+      background:#fff;
+      border:1px solid rgba(0,0,0,.10);
+      border-radius:18px;
+      box-shadow:0 14px 34px rgba(0,0,0,.07);
+      padding:14px;
+      margin-bottom:16px;
+    ">
+      <div style="font-weight:900; font-size:22px;">🎡 Roulette Europea (Demo)</div>
+      <div style="margin-top:6px; font-size:13px; color:rgba(0,0,0,.70); line-height:1.5;">
+        Seleziona un gettone, piazza le puntate (numeri o Rosso/Nero) e premi <b>Gira la roulette</b>.
+        Ogni <b>3 giri</b> ti chiederemo se vuoi passare alla versione reale.
+      </div>
     </div>
-  </div>
 
-  <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; align-items:start;">
+    <div id="main-grid" style="display:grid; grid-template-columns: 1.2fr 1fr; gap:16px; align-items:start;">
 
-    <!-- LEFT: WHEEL -->
-    <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-        <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
-          <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
-            <div style="display:flex; flex-direction:column; gap:6px;">
-              <div style="font-weight:900; font-size:18px;">🎰 Roulette Europea (Realistica)</div>
-            </div>
-
-            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-              <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);">
-                <div style="font-size:12px; color:rgba(0,0,0,.65);">Saldo</div>
-                <div id="balance" style="font-weight:900; font-size:18px;">€ 1.000</div>
+      <!-- LEFT: WHEEL -->
+      <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
+            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div style="font-weight:900; font-size:18px;">🎰 Roulette Europea (Realistica)</div>
               </div>
 
-              <button id="spinBtn" style="
-                border:none; cursor:pointer;
-                padding:12px 16px; border-radius:14px;
-                background:linear-gradient(135deg,#111 0%, #2a2a2a 100%);
-                color:#fff; font-weight:800; letter-spacing:.2px;
-                box-shadow:0 14px 28px rgba(0,0,0,.18);
-              ">Gira la roulette</button>
+              <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08);">
+                  <div style="font-size:12px; color:rgba(0,0,0,.65);">Saldo</div>
+                  <div id="balance" style="font-weight:900; font-size:18px;">€ 1.000</div>
+                </div>
 
-              <button id="clearBtn" style="
-                border:1px solid rgba(0,0,0,.14); cursor:pointer;
-                padding:12px 14px; border-radius:14px;
-                background:#fff; color:#111; font-weight:800;
-              ">Azzera puntate</button>
+                <button id="spinBtn" style="
+                  border:none; cursor:pointer;
+                  padding:12px 16px; border-radius:14px;
+                  background:linear-gradient(135deg,#111 0%, #2a2a2a 100%);
+                  color:#fff; font-weight:800; letter-spacing:.2px;
+                  box-shadow:0 14px 28px rgba(0,0,0,.18);
+                ">Gira la roulette</button>
+
+                <button id="clearBtn" style="
+                  border:1px solid rgba(0,0,0,.14); cursor:pointer;
+                  padding:12px 14px; border-radius:14px;
+                  background:#fff; color:#111; font-weight:800;
+                ">Azzera puntate</button>
+              </div>
+            </div>
+
+            <!-- STATUS -->
+            <div id="status" style="
+              font-size:22px;
+              font-weight:900;
+              color:#111;
+              background:linear-gradient(135deg,#f4f4f4,#ffffff);
+              border:2px dashed rgba(0,0,0,.15);
+              padding:14px 18px;
+              border-radius:14px;
+              text-align:center;
+            ">Scegli gettone → piazza puntate → Gira</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px; position:relative; border-radius:16px; background: radial-gradient(1200px 380px at 50% 15%, rgba(0,0,0,.06), transparent 60%), #fbfbfb; border:1px solid rgba(0,0,0,.06); padding:12px; overflow:hidden;">
+
+          <!-- Pointer -->
+          <div style="
+            position:absolute; top:12px; left:50%; transform:translateX(-50%);
+            width:0; height:0;
+            border-left:14px solid transparent;
+            border-right:14px solid transparent;
+            border-bottom:26px solid #d6b56a;
+            filter:drop-shadow(0 6px 10px rgba(0,0,0,.20));
+            z-index:3;
+          "></div>
+
+          <canvas id="wheel" width="620" height="620" style="width:100%; max-width:620px; display:block; margin:0 auto; border-radius:14px;"></canvas>
+
+          <!-- BIG WIN/LOSE OVERLAY -->
+          <div id="bigResult" style="
+            display:none;
+            position:absolute;
+            inset:0;
+            align-items:center;
+            justify-content:center;
+            z-index:5;
+            font-size:46px;
+            font-weight:900;
+            text-align:center;
+            letter-spacing:1px;
+            text-shadow:0 8px 24px rgba(0,0,0,.45);
+            padding:24px;
+          "></div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+            <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
+              <div style="font-size:12px; color:rgba(0,0,0,.65);">Esito</div>
+              <div id="outcome" style="font-weight:900; font-size:18px;">—</div>
+            </div>
+            <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
+              <div style="font-size:12px; color:rgba(0,0,0,.65);">Vincita</div>
+              <div id="win" style="font-weight:900; font-size:18px;">€ 0</div>
+            </div>
+            <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08); min-width:220px;">
+              <div style="font-size:12px; color:rgba(0,0,0,.65);">Puntate attive</div>
+              <div id="betsSummary" style="font-weight:800; font-size:14px; line-height:1.25;">Nessuna puntata</div>
             </div>
           </div>
 
-          <!-- STATUS (BIGGER + MORE VISIBLE) -->
-          <div id="status" style="
-            font-size:22px;
-            font-weight:900;
-            color:#111;
-            background:linear-gradient(135deg,#f4f4f4,#ffffff);
-            border:2px dashed rgba(0,0,0,.15);
-            padding:14px 18px;
-            border-radius:14px;
-            text-align:center;
-          ">Scegli gettone → piazza puntate → Gira</div>
-        </div>
-      </div>
-
-      <div style="margin-top:12px; position:relative; border-radius:16px; background: radial-gradient(1200px 380px at 50% 15%, rgba(0,0,0,.06), transparent 60%), #fbfbfb; border:1px solid rgba(0,0,0,.06); padding:12px; overflow:hidden;">
-        <!-- Pointer -->
-        <div style="
-          position:absolute; top:12px; left:50%; transform:translateX(-50%);
-          width:0; height:0;
-          border-left:14px solid transparent;
-          border-right:14px solid transparent;
-          border-bottom:26px solid #d6b56a;
-          filter:drop-shadow(0 6px 10px rgba(0,0,0,.20));
-          z-index:3;
-        "></div>
-
-        <canvas id="wheel" width="620" height="620" style="width:100%; max-width:620px; display:block; margin:0 auto; border-radius:14px;"></canvas>
-
-        <!-- BIG WIN/LOSE OVERLAY -->
-        <div id="bigResult" style="
-          display:none;
-          position:absolute;
-          inset:0;
-          align-items:center;
-          justify-content:center;
-          z-index:5;
-          font-size:46px;
-          font-weight:900;
-          text-align:center;
-          letter-spacing:1px;
-          text-shadow:0 8px 24px rgba(0,0,0,.45);
-          padding:24px;
-        "></div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
-          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
-            <div style="font-size:12px; color:rgba(0,0,0,.65);">Esito</div>
-            <div id="outcome" style="font-weight:900; font-size:18px;">—</div>
-          </div>
-          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08);">
-            <div style="font-size:12px; color:rgba(0,0,0,.65);">Vincita</div>
-            <div id="win" style="font-weight:900; font-size:18px;">€ 0</div>
-          </div>
-          <div style="padding:10px 12px; border-radius:14px; background:#fff; border:1px solid rgba(0,0,0,.08); min-width:220px;">
-            <div style="font-size:12px; color:rgba(0,0,0,.65);">Puntate attive</div>
-            <div id="betsSummary" style="font-weight:800; font-size:14px; line-height:1.25;">Nessuna puntata</div>
-          </div>
-        </div>
-
-        <div style="margin-top:10px; display:flex; justify-content:center;">
-          <div id="history" style="font-size:12px; color:rgba(0,0,0,.65); text-align:center;">
-            Storico: <span id="historyList">—</span>
+          <div style="margin-top:10px; display:flex; justify-content:center;">
+            <div id="history" style="font-size:12px; color:rgba(0,0,0,.65); text-align:center;">
+              Storico: <span id="historyList">—</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- RIGHT: BETTING -->
-    <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-        <div>
-          <div style="font-weight:900; font-size:16px;">Puntate</div>
-          <div style="font-size:12px; color:rgba(0,0,0,.65);">Seleziona un gettone e clicca su un numero (o Rosso/Nero).</div>
-        </div>
-
-        <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); text-align:right;">
-          <div style="font-size:12px; color:rgba(0,0,0,.65);">Gettone selezionato</div>
-          <div id="chipSelected" style="font-weight:900; font-size:16px;">€ 10</div>
-        </div>
-      </div>
-
-      <!-- Chips -->
-      <div style="margin-top:12px;">
-        <div style="font-weight:800; font-size:13px; margin-bottom:8px;">Gettoni</div>
-        <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
-      </div>
-
-      <!-- Red/Black -->
-      <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-        <button class="betRB" data-rb="red" style="
-          border:none; cursor:pointer;
-          padding:14px 12px; border-radius:14px;
-          background:linear-gradient(135deg,#b4001e,#ff2448);
-          color:#fff; font-weight:900; letter-spacing:.3px;
-          box-shadow:0 14px 28px rgba(180,0,30,.18);
-        ">ROSSO (1:1)</button>
-
-        <button class="betRB" data-rb="black" style="
-          border:none; cursor:pointer;
-          padding:14px 12px; border-radius:14px;
-          background:linear-gradient(135deg,#121212,#3b3b3b);
-          color:#fff; font-weight:900; letter-spacing:.3px;
-          box-shadow:0 14px 28px rgba(0,0,0,.18);
-        ">NERO (1:1)</button>
-      </div>
-
-      <!-- Numbers grid -->
-      <div style="margin-top:14px;">
+      <!-- RIGHT: BETTING -->
+      <div style="background:#fff; border:1px solid rgba(0,0,0,.10); border-radius:18px; box-shadow:0 14px 34px rgba(0,0,0,.07); padding:14px;">
         <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-          <div style="font-weight:800; font-size:13px;">Numeri (35:1)</div>
-          <div style="font-size:12px; color:rgba(0,0,0,.60);">Clic per aggiungere puntata</div>
+          <div>
+            <div style="font-weight:900; font-size:16px;">Puntate</div>
+            <div style="font-size:12px; color:rgba(0,0,0,.65);">Seleziona un gettone e clicca su un numero (o Rosso/Nero).</div>
+          </div>
+
+          <div style="padding:10px 12px; border-radius:14px; background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.08); text-align:right;">
+            <div style="font-size:12px; color:rgba(0,0,0,.65);">Gettone selezionato</div>
+            <div id="chipSelected" style="font-weight:900; font-size:16px;">€ 10</div>
+          </div>
         </div>
 
-        <div id="numbers" style="
-          margin-top:10px;
-          display:grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap:8px;
-        "></div>
+        <!-- Chips -->
+        <div style="margin-top:12px;">
+          <div style="font-weight:800; font-size:13px; margin-bottom:8px;">Gettoni</div>
+          <div id="chips" style="display:flex; flex-wrap:wrap; gap:10px;"></div>
+        </div>
+
+        <!-- Red/Black -->
+        <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button class="betRB" data-rb="red" style="
+            border:none; cursor:pointer;
+            padding:14px 12px; border-radius:14px;
+            background:linear-gradient(135deg,#b4001e,#ff2448);
+            color:#fff; font-weight:900; letter-spacing:.3px;
+            box-shadow:0 14px 28px rgba(180,0,30,.18);
+          ">ROSSO (1:1)</button>
+
+          <button class="betRB" data-rb="black" style="
+            border:none; cursor:pointer;
+            padding:14px 12px; border-radius:14px;
+            background:linear-gradient(135deg,#121212,#3b3b3b);
+            color:#fff; font-weight:900; letter-spacing:.3px;
+            box-shadow:0 14px 28px rgba(0,0,0,.18);
+          ">NERO (1:1)</button>
+        </div>
+
+        <!-- Numbers grid -->
+        <div style="margin-top:14px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+            <div style="font-weight:800; font-size:13px;">Numeri (35:1)</div>
+            <div style="font-size:12px; color:rgba(0,0,0,.60);">Clic per aggiungere puntata</div>
+          </div>
+
+          <div id="numbers" style="
+            margin-top:10px;
+            display:grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap:8px;
+          "></div>
+        </div>
+
+        <!-- Info -->
+        <div style="margin-top:14px; padding:12px; border-radius:14px; border:1px solid rgba(0,0,0,.10); background:rgba(0,0,0,.03);">
+          <div style="font-weight:900; font-size:13px;">Regole rapide</div>
+          <ul style="margin:8px 0 0 18px; padding:0; font-size:12px; color:rgba(0,0,0,.70); line-height:1.45;">
+            <li>Numero: paga <b>35:1</b> (vincita = puntata×36)</li>
+            <li>Rosso/Nero: paga <b>1:1</b> (vincita = puntata×2)</li>
+            <li>Lo <b>0</b> è verde e fa perdere Rosso/Nero</li>
+          </ul>
+        </div>
       </div>
 
-      <!-- Info -->
-      <div style="margin-top:14px; padding:12px; border-radius:14px; border:1px solid rgba(0,0,0,.10); background:rgba(0,0,0,.03);">
-        <div style="font-weight:900; font-size:13px;">Regole rapide</div>
-        <ul style="margin:8px 0 0 18px; padding:0; font-size:12px; color:rgba(0,0,0,.70); line-height:1.45;">
-          <li>Numero: paga <b>35:1</b> (vincita = puntata×36)</li>
-          <li>Rosso/Nero: paga <b>1:1</b> (vincita = puntata×2)</li>
-          <li>Lo <b>0</b> è verde e fa perdere Rosso/Nero</li>
-        </ul>
-      </div>
     </div>
-
   </div>
-</div>
 
-<!-- ✅ POPUP 3° CLICK (same logic as Slot) -->
-<div id="promoOverlay" style="
-  position:fixed;
-  inset:0;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.60);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-  z-index:999999;
-  padding:18px;
-  font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
-">
-  <div style="
-    width:min(440px, 96vw);
-    border-radius:22px;
-    padding:20px;
-    background:
-      radial-gradient(700px 320px at 20% 0%, rgba(245,193,108,.14), transparent 55%),
-      radial-gradient(700px 320px at 80% 20%, rgba(140,110,255,.12), transparent 55%),
-      linear-gradient(135deg,#0b0b10,#161622);
-    color:#fff;
-    text-align:center;
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:0 30px 90px rgba(0,0,0,.65);
-    position:relative;
+  <!-- POPUP (every 3 spins) -->
+  <div id="promoOverlay" style="
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.60);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    z-index:999999;
+    padding:18px;
+    font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
   ">
     <div style="
-      width:54px; height:54px;
-      margin:4px auto 10px;
-      border-radius:18px;
-      display:flex; align-items:center; justify-content:center;
-      background:linear-gradient(135deg,#f5c16c,#c79b3a);
-      color:#111;
-      font-weight:900;
-      box-shadow:0 18px 55px rgba(0,0,0,.55);
-      font-size:26px;
-    ">🎯</div>
-
-    <div style="font-size:28px; font-weight:900; margin-bottom:8px;">
-      Vuoi giocare sul serio?
-    </div>
-
-    <div style="font-size:14px; color:rgba(255,255,255,.85); line-height:1.5; margin-bottom:16px;">
-      Questa è una demo. Se vuoi provare il gioco reale, entra su un sito Partner!
-    </div>
-
-    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-      <a href="https://nextscore.it/referral" style="
-        text-decoration:none;
-        padding:14px 18px;
-        border-radius:16px;
+      width:min(460px, 96vw);
+      border-radius:22px;
+      padding:20px;
+      background:
+        radial-gradient(700px 320px at 20% 0%, rgba(245,193,108,.14), transparent 55%),
+        radial-gradient(700px 320px at 80% 20%, rgba(140,110,255,.12), transparent 55%),
+        linear-gradient(135deg,#0b0b10,#161622);
+      color:#fff;
+      text-align:center;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 30px 90px rgba(0,0,0,.65);
+      position:relative;
+    ">
+      <div style="
+        width:54px; height:54px;
+        margin:4px auto 10px;
+        border-radius:18px;
+        display:flex; align-items:center; justify-content:center;
         background:linear-gradient(135deg,#f5c16c,#c79b3a);
         color:#111;
         font-weight:900;
-        box-shadow:0 18px 55px rgba(0,0,0,.45);
-        display:inline-flex;
-        align-items:center;
-        gap:10px;
-      ">
-        Sì, portami lì →
-      </a>
+        box-shadow:0 18px 55px rgba(0,0,0,.55);
+        font-size:26px;
+      ">🎯</div>
 
-      <button id="promoNo" style="
-        border:1px solid rgba(255,255,255,.16);
-        background:rgba(255,255,255,.06);
-        color:#fff;
-        border-radius:16px;
-        padding:14px 18px;
-        font-weight:900;
-        cursor:pointer;
-      ">
-        No, continua
-      </button>
+      <div style="font-size:28px; font-weight:900; margin-bottom:8px;">
+        Vuoi giocare sul serio?
+      </div>
+
+      <div style="font-size:14px; color:rgba(255,255,255,.85); line-height:1.5; margin-bottom:16px;">
+        Questa è una demo. Se vuoi provare il gioco reale, gioca su un sito Partner.
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+        <a href="https://nextscore.it/referral" style="
+          text-decoration:none;
+          padding:14px 18px;
+          border-radius:16px;
+          background:linear-gradient(135deg,#f5c16c,#c79b3a);
+          color:#111;
+          font-weight:900;
+          box-shadow:0 18px 55px rgba(0,0,0,.45);
+          display:inline-flex;
+          align-items:center;
+          gap:10px;
+        ">
+          Sì, andiamo →
+        </a>
+
+        <button id="promoNo" style="
+          border:1px solid rgba(255,255,255,.16);
+          background:rgba(255,255,255,.06);
+          color:#fff;
+          border-radius:16px;
+          padding:14px 18px;
+          font-weight:900;
+          cursor:pointer;
+        ">
+          No, continua
+        </button>
+      </div>
     </div>
   </div>
-</div>
+
+  <!-- FIXED BOTTOM BANNER -->
+  <div id="partnerBanner" style="
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:999998;
+    padding:10px 12px;
+    background:
+      radial-gradient(900px 260px at 20% 0%, rgba(245,193,108,.18), transparent 60%),
+      radial-gradient(900px 260px at 80% 10%, rgba(140,110,255,.16), transparent 60%),
+      linear-gradient(135deg,#0b0b10,#141423);
+    border-top:1px solid rgba(255,255,255,.14);
+    box-shadow:0 -18px 60px rgba(0,0,0,.45);
+    font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  ">
+    <div style="
+      max-width:1100px;
+      margin:0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      color:#fff;
+    ">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <div style="
+          width:38px; height:38px;
+          border-radius:14px;
+          background:linear-gradient(135deg,#f5c16c,#c79b3a);
+          display:flex; align-items:center; justify-content:center;
+          color:#111; font-weight:900;
+          box-shadow:0 14px 40px rgba(0,0,0,.35);
+        ">★</div>
+
+        <div style="line-height:1.2;">
+          <div style="font-weight:900; font-size:14px;">Vuoi fare sul serio?</div>
+          <div style="font-size:12px; color:rgba(255,255,255,.82);">Gioca su un sito Partner!</div>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <a href="https://nextscore.it/referral" style="
+          text-decoration:none;
+          padding:12px 14px;
+          border-radius:14px;
+          background:linear-gradient(135deg,#f5c16c,#c79b3a);
+          color:#111;
+          font-weight:900;
+          box-shadow:0 14px 46px rgba(0,0,0,.35);
+          white-space:nowrap;
+        ">
+          Vai al Partner →
+        </a>
+
+        <button id="bannerClose" style="
+          border:1px solid rgba(255,255,255,.16);
+          background:rgba(255,255,255,.06);
+          color:#fff;
+          border-radius:14px;
+          padding:12px 12px;
+          font-weight:900;
+          cursor:pointer;
+        ">✕</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 (() => {
-  // ======= European wheel order (single zero) =======
   const WHEEL_ORDER = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
   const RED_SET = new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 
@@ -289,64 +378,55 @@
   const numbersWrap = document.getElementById("numbers");
   const chipSelectedEl = document.getElementById("chipSelected");
 
-  // ✅ Popup logic (3rd click)
+  // Popup every 3 spins
   const promoOverlay = document.getElementById("promoOverlay");
   const promoNo = document.getElementById("promoNo");
-  const SPIN_CLICKS_KEY = "roulette_spin_clicks_v1";
-  const POPUP_SHOWN_KEY = "roulette_popup_shown_v1";
-  let spinClicks = Number(localStorage.getItem(SPIN_CLICKS_KEY) || "0");
-  let promoShown = localStorage.getItem(POPUP_SHOWN_KEY) === "1";
+  const SPINS_KEY = "roulette_spins_v2";
+  let spins = Number(localStorage.getItem(SPINS_KEY) || "0");
 
-  function maybeShowPromo(){
-    spinClicks += 1;
-    localStorage.setItem(SPIN_CLICKS_KEY, String(spinClicks));
-    if (spinClicks === 3 && !promoShown){
-      promoShown = true;
-      localStorage.setItem(POPUP_SHOWN_KEY, "1");
-      promoOverlay.style.display = "flex";
-      document.body.style.overflow = "hidden";
-    }
+  function openPromo(){
+    promoOverlay.style.display = "flex";
+    document.body.style.overflow = "hidden";
   }
-
   function closePromo(){
     promoOverlay.style.display = "none";
     document.body.style.overflow = "";
   }
-
   promoNo.addEventListener("click", closePromo);
   promoOverlay.addEventListener("click", (e) => { if(e.target === promoOverlay) closePromo(); });
   window.addEventListener("keydown", (e) => { if(e.key === "Escape" && promoOverlay.style.display === "flex") closePromo(); });
 
-  // ======= State =======
+  // Banner close
+  const banner = document.getElementById("partnerBanner");
+  const bannerClose = document.getElementById("bannerClose");
+  const BANNER_KEY = "roulette_banner_closed_v1";
+  if (localStorage.getItem(BANNER_KEY) === "1") banner.style.display = "none";
+  bannerClose.addEventListener("click", () => {
+    banner.style.display = "none";
+    localStorage.setItem(BANNER_KEY, "1");
+  });
+
   let balance = 1000;
   let selectedChip = 10;
 
-  let bets = {
-    numbers: new Map(),
-    red: 0,
-    black: 0
-  };
-
+  let bets = { numbers:new Map(), red:0, black:0 };
   let isSpinning = false;
 
-  // Animation state
-  let wheelAngle = 0;     // radians
-  let ballAngle = 0;      // radians
+  let wheelAngle = 0;
+  let ballAngle = 0;
   let rafId = null;
 
   const history = [];
 
-  // ======= Helpers =======
   const fmt = (n) => "€ " + n.toLocaleString("it-IT");
-  const pocketCount = WHEEL_ORDER.length; // 37
+  const pocketCount = WHEEL_ORDER.length;
   const pocketAngle = (Math.PI * 2) / pocketCount;
-  const pointerAngle = -Math.PI / 2; // top
+  const pointerAngle = -Math.PI / 2;
 
   function numberColor(n){
     if (n === 0) return "green";
     return RED_SET.has(n) ? "red" : "black";
   }
-
   function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
   function totalBet(){
@@ -363,9 +443,7 @@
     if (bets.red) parts.push(`Rosso: <b>${fmt(bets.red)}</b>`);
     if (bets.black) parts.push(`Nero: <b>${fmt(bets.black)}</b>`);
     if (bets.numbers.size){
-      const list = [...bets.numbers.entries()]
-        .sort((a,b)=>a[0]-b[0])
-        .slice(0, 8)
+      const list = [...bets.numbers.entries()].sort((a,b)=>a[0]-b[0]).slice(0, 8)
         .map(([num, amt]) => `${num}: <b>${fmt(amt)}</b>`);
       const extra = bets.numbers.size > 8 ? ` +${bets.numbers.size-8}…` : "";
       parts.push(`Numeri: ${list.join(", ")}${extra}`);
@@ -403,9 +481,23 @@
       bigResult.style.background = "rgba(0,0,0,.65)";
     }
 
-    setTimeout(() => {
-      bigResult.style.display = "none";
-    }, 2200);
+    setTimeout(() => { bigResult.style.display = "none"; }, 2200);
+  }
+
+  // ===== Canvas retina / resize (fix “roulette bianca”) =====
+  function setupCanvas(){
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const cssSize = 620; // base design
+    canvas.style.width = "100%";
+    canvas.style.maxWidth = cssSize + "px";
+    canvas.style.height = "auto";
+
+    // keep internal resolution sharp
+    canvas.width = Math.floor(cssSize * dpr);
+    canvas.height = Math.floor(cssSize * dpr);
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // now all drawing uses 620x620 logical space
   }
 
   // ======= Build chips =======
@@ -432,7 +524,6 @@
       const d = document.createElement("div");
       d.style.cssText = chipStyle(v, v === selectedChip);
       d.textContent = v;
-      d.title = `Seleziona gettone €${v}`;
       d.onclick = () => { selectedChip = v; renderChips(); updateUI(); };
       chipsWrap.appendChild(d);
     });
@@ -453,8 +544,6 @@
       font-weight:900;
       background:${bg};
       box-shadow: 0 10px 22px rgba(0,0,0,.14);
-      position:relative;
-      overflow:hidden;
     `;
   }
 
@@ -469,12 +558,10 @@
     }
   }
 
-  // ======= Betting actions =======
   function addBetNumber(n){
     if (isSpinning) return;
     const cur = bets.numbers.get(n) || 0;
     bets.numbers.set(n, cur + selectedChip);
-
     statusEl.innerHTML = `🎯 PUNTATA SUL NUMERO <span style="color:#d6b56a;">${n}</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
     updateUI();
   }
@@ -482,13 +569,10 @@
   function addBetRB(which){
     if (isSpinning) return;
     bets[which] += selectedChip;
-
-    if (which === "red"){
-      statusEl.innerHTML = `🎯 PUNTATA SU <span style="color:#b4001e;">ROSSO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
-    } else {
-      statusEl.innerHTML = `🎯 PUNTATA SU <span style="color:#111;">NERO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
-    }
-
+    statusEl.innerHTML =
+      which === "red"
+        ? `🎯 PUNTATA SU <span style="color:#b4001e;">ROSSO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`
+        : `🎯 PUNTATA SU <span style="color:#111;">NERO</span><br><span style="font-size:18px; font-weight:800;">+ ${fmt(selectedChip)}</span>`;
     updateUI();
   }
 
@@ -496,13 +580,13 @@
     btn.addEventListener("click", () => addBetRB(btn.dataset.rb));
   });
 
-  // ======= Wheel drawing =======
   function drawWheel(){
-    const w = canvas.width, h = canvas.height;
+    const w = 620, h = 620; // logical space
     const cx = w/2, cy = h/2;
 
     ctx.clearRect(0,0,w,h);
 
+    // shadow
     ctx.save();
     ctx.translate(cx, cy);
     ctx.beginPath();
@@ -523,11 +607,13 @@
     const ringInner = R*0.72;
     const textRadius = (ringOuter + ringInner) / 2;
 
+    // rim
     ctx.beginPath();
     ctx.arc(0,0, ringOuter+10, 0, Math.PI*2);
     ctx.fillStyle = "#2b2b2b";
     ctx.fill();
 
+    // highlight
     ctx.beginPath();
     ctx.arc(0,0, ringOuter+6, 0, Math.PI*2);
     const grd = ctx.createRadialGradient(0,0, ringOuter*0.55, 0,0, ringOuter+18);
@@ -550,12 +636,14 @@
       ctx.fillStyle = col === "green" ? "#0b7a3e" : col === "red" ? "#b4001e" : "#141414";
       ctx.fill();
 
+      // separators
       ctx.strokeStyle = "rgba(255,255,255,.14)";
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.arc(0,0, ringOuter, a0, a0);
       ctx.stroke();
 
+      // inner ring
       ctx.beginPath();
       ctx.moveTo(0,0);
       ctx.arc(0,0, ringInner, a0, a1);
@@ -563,6 +651,7 @@
       ctx.fillStyle = "rgba(255,255,255,.06)";
       ctx.fill();
 
+      // number
       ctx.save();
       const mid = (a0+a1)/2;
       ctx.rotate(mid);
@@ -576,6 +665,7 @@
       ctx.restore();
     }
 
+    // center
     ctx.beginPath();
     ctx.arc(0,0, ringInner-10, 0, Math.PI*2);
     const g2 = ctx.createRadialGradient(0,0, 20, 0,0, ringInner);
@@ -585,6 +675,7 @@
     ctx.fillStyle = g2;
     ctx.fill();
 
+    // cap
     ctx.beginPath();
     ctx.arc(0,0, 38, 0, Math.PI*2);
     ctx.fillStyle = "rgba(0,0,0,.22)";
@@ -597,6 +688,7 @@
 
     ctx.restore();
 
+    // ball
     const RballTrack = (Math.min(cx,cy) - 18) * 0.90;
     const rBall = 9;
 
@@ -619,11 +711,6 @@
     ctx.strokeStyle = "rgba(0,0,0,.10)";
     ctx.lineWidth = 2;
     ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(bx-2, by-2, rBall*0.55, 0, Math.PI*2);
-    ctx.fillStyle = "rgba(255,255,255,.22)";
-    ctx.fill();
   }
 
   function pocketIndexAtPointer(angle){
@@ -632,11 +719,9 @@
     const idx = Math.floor(p / pocketAngle);
     return clamp(idx, 0, pocketCount-1);
   }
-
   function numberAtPointer(angle){
     return WHEEL_ORDER[pocketIndexAtPointer(angle)];
   }
-
   function wheelAngleForTargetIndex(targetIdx){
     const targetLocalMid = targetIdx * pocketAngle + pocketAngle/2;
     return pointerAngle - targetLocalMid;
@@ -644,7 +729,6 @@
 
   function computeWinnings(resultNumber){
     let win = 0;
-
     const numAmt = bets.numbers.get(resultNumber) || 0;
     if (numAmt > 0) win += numAmt * 36;
 
@@ -658,18 +742,14 @@
   function spin(){
     if (isSpinning) return;
 
-    // ✅ count clicks and show promo at 3rd click (one-time)
-    maybeShowPromo();
-
     const wager = totalBet();
-    if (wager <= 0){
-      statusEl.innerHTML = "Prima piazza almeno una puntata 🙂";
-      return;
-    }
-    if (balance < wager){
-      statusEl.innerHTML = "Saldo insufficiente per questa puntata.";
-      return;
-    }
+    if (wager <= 0){ statusEl.innerHTML = "Prima piazza almeno una puntata 🙂"; return; }
+    if (balance < wager){ statusEl.innerHTML = "Saldo insufficiente per questa puntata."; return; }
+
+    // popup every 3 spins
+    spins += 1;
+    localStorage.setItem(SPINS_KEY, String(spins));
+    if (spins % 3 === 0) openPromo();
 
     balance -= wager;
 
@@ -681,7 +761,6 @@
     clearBtn.disabled = true;
 
     bigResult.style.display = "none";
-
     statusEl.innerHTML = "🎡 La pallina gira…";
     outcomeEl.textContent = "—";
     winEl.textContent = fmt(0);
@@ -748,11 +827,9 @@
         outcomeEl.textContent = `${labelCol} ${landed}`;
         winEl.textContent = fmt(win);
 
-        if (win > 0){
-          statusEl.innerHTML = `✅ RISULTATO: <b>${landed}</b> — <span style="color:#1ecf6f;">HAI VINTO</span><br><span style="font-size:18px; font-weight:800;">Vincita: ${fmt(win)}</span>`;
-        } else {
-          statusEl.innerHTML = `❌ RISULTATO: <b>${landed}</b> — <span style="color:#ff2448;">HAI PERSO</span><br><span style="font-size:18px; font-weight:800;">Riprova!</span>`;
-        }
+        statusEl.innerHTML = (win > 0)
+          ? `✅ RISULTATO: <b>${landed}</b> — <span style="color:#1ecf6f;">HAI VINTO</span><br><span style="font-size:18px; font-weight:800;">Vincita: ${fmt(win)}</span>`
+          : `❌ RISULTATO: <b>${landed}</b> — <span style="color:#ff2448;">HAI PERSO</span><br><span style="font-size:18px; font-weight:800;">Riprova!</span>`;
 
         updateUI();
       }
@@ -762,9 +839,7 @@
     updateUI();
   }
 
-  // ======= Buttons =======
   spinBtn.addEventListener("click", spin);
-
   clearBtn.addEventListener("click", () => {
     if (isSpinning) return;
     clearBets();
@@ -772,21 +847,22 @@
     bigResult.style.display = "none";
   });
 
-  // ======= Init =======
+  // Init
   renderChips();
   buildNumbers();
   updateUI();
 
+  setupCanvas();
   wheelAngle = 0.2;
   ballAngle = 0.9;
   drawWheel();
+
+  window.addEventListener("resize", () => {
+    setupCanvas();
+    drawWheel();
+  });
 })();
 </script>
 
-<style>
-  @media (max-width: 980px){
-    #roulette-app > div:nth-child(2){
-      grid-template-columns:1fr !important;
-    }
-  }
-</style>
+</body>
+</html>
